@@ -47,7 +47,7 @@ public class LocationForegroundService extends Service {
     public Location gps() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = null;
-        //高版本的权限检查
+        //不加这段话会导致下面爆红,（这个俗称版本压制，哈哈哈哈哈哈）
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return null;
         }
@@ -56,6 +56,7 @@ public class LocationForegroundService extends Service {
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         }
+        //网络获取定位为空时，每隔1秒请求一次
         if (location == null) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
         }
@@ -63,7 +64,7 @@ public class LocationForegroundService extends Service {
         return location;
     }
 
-    //显示后台定位通知栏
+    //显示后台定位通知栏（此为8.0版本通知栏）
     private void showNotify() {
         if (channel == null) {
             channel = createNotificationChannel();
@@ -91,7 +92,6 @@ public class LocationForegroundService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.e(TAG, "--->onStartCommand");
         return localBinder;
     }
 

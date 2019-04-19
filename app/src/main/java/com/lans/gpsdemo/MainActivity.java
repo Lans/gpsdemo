@@ -18,8 +18,8 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private TextView txt;
+    private boolean isbind;
     private ServiceConnection connection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.e(TAG, "--->onServiceConnected");
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Intent intent = new Intent(this, LocationForegroundService.class);
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        isbind = bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
     private boolean GPSOpen() {
@@ -81,7 +81,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (isbind) {
+            unbindService(connection);
+            isbind = false;
+        }
         super.onDestroy();
-        unbindService(connection);
     }
 }
